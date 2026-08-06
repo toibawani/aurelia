@@ -1,134 +1,302 @@
-import { useState } from "react";
+import {useState} from "react";
+import {motion} from "framer-motion";
+import {
+Sparkles,
+Sun,
+CheckCircle2
+} from "lucide-react";
+
 import MoodSelector from "./components/MoodSelector";
 import TaskCard from "./components/TaskCard";
-import type { Task } from "./types/task";
+import type {Task} from "./types/task";
 
 
-function App() {
-
-  const [mood, setMood] = useState("Balanced");
+function App(){
 
 
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Build Aurelia",
-      priority: "High",
-      energy: "High",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Read and learn something new",
-      priority: "Medium",
-      energy: "Normal",
-      completed: false,
-    },
-  ]);
+const [mood,setMood]=useState("Balanced");
 
 
-  function toggleTask(id:number){
+const [tasks,setTasks]=useState<Task[]>([
 
-    setTasks(
-      tasks.map((task)=> 
-        task.id === id
-        ?
-        {
-          ...task,
-          completed: !task.completed
-        }
-        :
-        task
-      )
-    );
+{
+id:1,
+title:"Build Aurelia",
+priority:"High",
+energy:"High",
+completed:false
+},
 
-  }
+{
+id:2,
+title:"Study something meaningful",
+priority:"Medium",
+energy:"Normal",
+completed:true
+}
 
-
-  return (
-
-    <main className="
-      min-h-screen
-      bg-[#faf7f2]
-      p-10
-    ">
-
-
-      <section className="
-        max-w-3xl
-        mx-auto
-      ">
-
-        <h1 className="
-          text-5xl
-          font-bold
-          text-center
-        ">
-          Aurelia ✨
-        </h1>
-
-
-        <p className="
-          text-center
-          text-gray-500
-          mt-3
-          text-lg
-        ">
-          A mindful productivity companion
-        </p>
-
-
-        <div className="mt-10">
-
-          <MoodSelector 
-            onMoodChange={setMood}
-          />
-
-        </div>
-
-
-        <h2 className="
-          text-center
-          mt-8
-          text-xl
-          font-medium
-        ">
-          Today's energy: {mood}
-        </h2>
+]);
 
 
 
-        <div className="
-          mt-8
-          space-y-5
-        ">
+function toggleTask(id:number){
 
-          {
-            tasks.map((task)=>(
+setTasks(
+tasks.map(task=>
 
-              <TaskCard
+task.id===id
+?
+{
+...task,
+completed:!task.completed
+}
+:
+task
 
-                key={task.id}
+)
 
-                task={task}
+)
 
-                toggleTask={toggleTask}
-
-              />
-
-            ))
-          }
-
-
-        </div>
+}
 
 
-      </section>
+
+const completed =
+tasks.filter(task=>task.completed).length;
 
 
-    </main>
 
-  );
+const progress =
+Math.round(
+(completed/tasks.length)*100
+);
+
+
+
+return(
+
+
+<div className="
+min-h-screen
+p-8
+">
+
+
+<div className="
+max-w-5xl
+mx-auto
+">
+
+
+<motion.div
+
+initial={{opacity:0,y:-20}}
+
+animate={{opacity:1,y:0}}
+
+className="
+flex
+justify-between
+items-center
+"
+
+>
+
+
+<div>
+
+<h1 className="
+text-6xl
+font-bold
+tracking-tight
+">
+
+Aurelia
+
+<Sparkles
+className="inline ml-3"
+size={40}
+/>
+
+</h1>
+
+
+<p className="
+text-gray-500
+mt-3
+text-lg
+">
+
+Design your day with intention.
+
+</p>
+
+
+</div>
+
+
+
+<div className="
+bg-white/70
+backdrop-blur-xl
+rounded-3xl
+p-5
+shadow-lg
+text-center
+">
+
+
+<Sun
+className="mx-auto"
+/>
+
+
+<p className="text-sm">
+Energy
+</p>
+
+
+<h3 className="
+font-semibold
+">
+
+{mood}
+
+</h3>
+
+
+</div>
+
+
+</motion.div>
+
+
+
+
+
+<div className="
+mt-12
+grid
+md:grid-cols-3
+gap-6
+">
+
+
+
+<div className="
+md:col-span-2
+bg-white/70
+backdrop-blur-xl
+rounded-[2rem]
+p-8
+shadow-xl
+">
+
+
+<h2 className="
+text-2xl
+font-semibold
+mb-6
+">
+
+How do you feel today?
+
+</h2>
+
+
+<MoodSelector
+
+onMoodChange={setMood}
+
+/>
+
+
+</div>
+
+
+
+
+
+<div className="
+bg-black
+text-white
+rounded-[2rem]
+p-8
+shadow-xl
+">
+
+
+<h3>
+Daily Growth
+</h3>
+
+
+<div className="
+text-5xl
+font-bold
+mt-5
+">
+
+{progress}%
+
+</div>
+
+
+<p className="
+mt-3
+text-gray-300
+">
+
+Keep growing 🌱
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div className="
+mt-10
+space-y-5
+">
+
+
+{
+tasks.map(task=>(
+
+<TaskCard
+
+key={task.id}
+
+task={task}
+
+toggleTask={toggleTask}
+
+/>
+
+))
+}
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+)
 
 }
 
