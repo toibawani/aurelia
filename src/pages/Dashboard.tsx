@@ -7,8 +7,26 @@ import {
 import DashboardLayout from "../layouts/DashboardLayout";
 import WelcomeCard from "../components/dashboard/WelcomeCard";
 import StatCard from "../components/dashboard/StatCard";
+import TaskList from "../components/dashboard/TaskList";
+import { useTasks } from "../features/tasks/hooks/useTasks";
 
 export default function Dashboard() {
+  const {
+    tasks,
+    addTask,
+    toggleTask,
+    deleteTask,
+    progress,
+  } = useTasks();
+
+  function handleAddTask() {
+    const title = window.prompt("What needs to be done?");
+
+    if (title) {
+      addTask(title);
+    }
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -28,8 +46,8 @@ export default function Dashboard() {
           <div className="grid gap-5 md:grid-cols-3">
             <StatCard
               label="Focus Score"
-              value="82%"
-              description="You're having a focused day."
+              value={`${progress}%`}
+              description="Based on today's completed tasks."
               icon={Target}
             />
 
@@ -48,6 +66,13 @@ export default function Dashboard() {
             />
           </div>
         </section>
+
+        <TaskList
+          tasks={tasks}
+          onAdd={handleAddTask}
+          onToggle={toggleTask}
+          onDelete={deleteTask}
+        />
       </div>
     </DashboardLayout>
   );

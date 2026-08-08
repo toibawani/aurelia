@@ -1,24 +1,34 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Settings from "./pages/Settings";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 
-function App() {
+type View = "landing" | "auth" | "dashboard";
+
+export default function App() {
+  const [view, setView] = useState<View>("landing");
+
+  if (view === "dashboard") {
+    return (
+      <Dashboard
+        onLogout={() => setView("landing")}
+      />
+    );
+  }
+
+  if (view === "auth") {
+    return (
+      <Auth
+        onSuccess={() => setView("dashboard")}
+      />
+    );
+  }
+
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Landing
+      onGetStarted={() => setView("auth")}
+      onLogin={() => setView("auth")}
+    />
   );
 }
-
-export default App;
