@@ -1,34 +1,90 @@
-import { useState } from "react";
+import {
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import Auth from "./pages/Auth";
-
-type View = "landing" | "auth" | "dashboard";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
+import NotesPage from "./features/notes/components/NotesPage";
 
 export default function App() {
-  const [view, setView] = useState<View>("landing");
-
-  if (view === "dashboard") {
-    return (
-      <Dashboard
-        onLogout={() => setView("landing")}
-      />
-    );
-  }
-
-  if (view === "auth") {
-    return (
-      <Auth
-        onSuccess={() => setView("dashboard")}
-      />
-    );
-  }
-
   return (
-    <Landing
-      onGetStarted={() => setView("auth")}
-      onLogin={() => setView("auth")}
-    />
+    <Routes>
+      <Route
+        path="/"
+        element={<Landing />}
+      />
+
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/signup"
+        element={<Signup />}
+      />
+
+      <Route
+        path="/dashboard"
+        element={<Dashboard />}
+      />
+
+      <Route
+        path="/dashboard/notes"
+        element={<NotesPage />}
+      />
+
+      <Route
+        path="/profile"
+        element={<Profile />}
+      />
+
+      <Route
+        path="/settings"
+        element={<Settings />}
+      />
+
+      <Route
+        path="/dashboard/tasks"
+        element={
+          <Navigate
+            to="/dashboard"
+            replace
+          />
+        }
+      />
+
+      <Route
+        path="/dashboard/garden"
+        element={
+          <Navigate
+            to="/dashboard"
+            replace
+          />
+        }
+      />
+
+      <Route
+        path="/dashboard/insights"
+        element={
+          <Navigate
+            to="/dashboard"
+            replace
+          />
+        }
+      />
+
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
+    </Routes>
   );
 }
