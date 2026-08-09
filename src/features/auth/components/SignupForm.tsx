@@ -1,249 +1,148 @@
 import { useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  User,
-} from "lucide-react";
-
-import { useAuth } from "../hooks/useAuth";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 interface SignupFormProps {
-  onSwitchToLogin: () => void;
-  onSuccess: () => void;
+  onSignup: () => void;
+  onLogin: () => void;
 }
 
 export default function SignupForm({
-  onSwitchToLogin,
-  onSuccess,
+  onSignup,
+  onLogin,
 }: SignupFormProps) {
-  const { signUp } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const [name, setName] =
-    useState("");
-
-  const [email, setEmail] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
-
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const passwordStrong =
-    password.length >= 8;
-
-  function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-  ) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setError("");
-
     if (!name.trim()) {
-      setError("What should we call you?");
+      setError("Please tell us your name.");
       return;
     }
 
-    if (!email.trim()) {
-      setError("Please enter your email.");
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
       return;
     }
 
-    if (!passwordStrong) {
-      setError(
-        "Your password needs at least 8 characters.",
-      );
+    if (password.length < 6) {
+      setError("Your password should be at least 6 characters.");
       return;
     }
 
-    setLoading(true);
-
-    window.setTimeout(() => {
-      signUp({
-        name,
-        email,
-        password,
-      });
-
-      setLoading(false);
-      onSuccess();
-    }, 600);
+    setError("");
+    onSignup();
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-5"
-    >
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
           htmlFor="signup-name"
-          className="mb-2 block text-sm font-medium"
+          className="mb-2 block text-sm font-medium text-[#46534c]"
         >
           Your name
         </label>
 
-        <div className="relative">
-          <User
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa49f]"
-          />
-
-          <input
-            id="signup-name"
-            value={name}
-            onChange={(event) =>
-              setName(event.target.value)
-            }
-            placeholder="How should we call you?"
-            autoComplete="name"
-            className="h-13 w-full rounded-2xl border border-[#ddd7cc] bg-white/75 pl-11 pr-4 outline-none transition placeholder:text-[#b1b8b3] focus:border-[#8d9b93] focus:bg-white focus:ring-4 focus:ring-[#dce5dd]"
-          />
-        </div>
+        <input
+          id="signup-name"
+          type="text"
+          value={name}
+          onChange={(event) => {
+            setName(event.target.value);
+            setError("");
+          }}
+          placeholder="What should Aurelia call you?"
+          autoComplete="name"
+          className="h-12 w-full rounded-2xl border border-[#dedbd3] bg-white/70 px-4 text-sm outline-none transition placeholder:text-[#a3aaa5] focus:border-[#91a397] focus:bg-white focus:ring-4 focus:ring-[#dfe9dc]"
+        />
       </div>
 
       <div>
         <label
           htmlFor="signup-email"
-          className="mb-2 block text-sm font-medium"
+          className="mb-2 block text-sm font-medium text-[#46534c]"
         >
           Email
         </label>
 
-        <div className="relative">
-          <Mail
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa49f]"
-          />
-
-          <input
-            id="signup-email"
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
-            placeholder="you@example.com"
-            autoComplete="email"
-            className="h-13 w-full rounded-2xl border border-[#ddd7cc] bg-white/75 pl-11 pr-4 outline-none transition placeholder:text-[#b1b8b3] focus:border-[#8d9b93] focus:bg-white focus:ring-4 focus:ring-[#dce5dd]"
-          />
-        </div>
+        <input
+          id="signup-email"
+          type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setError("");
+          }}
+          placeholder="you@example.com"
+          autoComplete="email"
+          className="h-12 w-full rounded-2xl border border-[#dedbd3] bg-white/70 px-4 text-sm outline-none transition placeholder:text-[#a3aaa5] focus:border-[#91a397] focus:bg-white focus:ring-4 focus:ring-[#dfe9dc]"
+        />
       </div>
 
       <div>
         <label
           htmlFor="signup-password"
-          className="mb-2 block text-sm font-medium"
+          className="mb-2 block text-sm font-medium text-[#46534c]"
         >
           Password
         </label>
 
         <div className="relative">
-          <Lock
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa49f]"
-          />
-
           <input
             id="signup-password"
-            type={
-              showPassword
-                ? "text"
-                : "password"
-            }
+            type={showPassword ? "text" : "password"}
             value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
-            placeholder="At least 8 characters"
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setError("");
+            }}
+            placeholder="At least 6 characters"
             autoComplete="new-password"
-            className="h-13 w-full rounded-2xl border border-[#ddd7cc] bg-white/75 pl-11 pr-12 outline-none transition placeholder:text-[#b1b8b3] focus:border-[#8d9b93] focus:bg-white focus:ring-4 focus:ring-[#dce5dd]"
+            className="h-12 w-full rounded-2xl border border-[#dedbd3] bg-white/70 px-4 pr-12 text-sm outline-none transition placeholder:text-[#a3aaa5] focus:border-[#91a397] focus:bg-white focus:ring-4 focus:ring-[#dfe9dc]"
           />
 
           <button
             type="button"
-            onClick={() =>
-              setShowPassword(
-                (current) => !current,
-              )
-            }
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-[#89958e] transition hover:bg-[#f0eee8] hover:text-[#27332f]"
+            onClick={() => setShowPassword((current) => !current)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-[#8a958f] transition hover:bg-[#f1f3ef]"
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            {showPassword ? (
-              <EyeOff size={17} />
-            ) : (
-              <Eye size={17} />
-            )}
+            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
           </button>
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 text-xs">
-          <span
-            className={`flex h-5 w-5 items-center justify-center rounded-full ${
-              passwordStrong
-                ? "bg-[#dce8dc] text-[#506b58]"
-                : "bg-[#ebe8e0] text-[#a3aaa5]"
-            }`}
-          >
-            <Check size={12} />
-          </span>
-
-          <span className="text-[#7b8781]">
-            Use at least 8 characters
-          </span>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-[#ead4cc] bg-[#fbefeb] px-4 py-3 text-sm leading-5 text-[#9b5e50]">
+        <div className="rounded-2xl border border-[#ead6ce] bg-[#fbf0eb] px-4 py-3 text-sm text-[#8b6256]">
           {error}
         </div>
       )}
 
       <button
         type="submit"
-        disabled={loading}
-        className="group flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-[#27332f] px-5 font-medium text-white shadow-[0_12px_30px_rgba(39,51,47,0.18)] transition hover:-translate-y-0.5 hover:bg-[#34433d] disabled:cursor-not-allowed disabled:opacity-60"
+        className="group flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#293630] text-sm font-medium text-white shadow-[0_14px_30px_rgba(41,54,48,.16)] transition hover:-translate-y-0.5 hover:bg-[#34453d] active:translate-y-0"
       >
-        {loading ? (
-          "Creating your space..."
-        ) : (
-          <>
-            Create my Aurelia
-            <ArrowRight
-              size={17}
-              className="transition-transform group-hover:translate-x-1"
-            />
-          </>
-        )}
+        Create my space
+        <ArrowRight
+          size={16}
+          className="transition-transform group-hover:translate-x-0.5"
+        />
       </button>
 
-      <p className="pt-3 text-center text-sm text-[#718078]">
+      <p className="pt-2 text-center text-sm text-[#7d8882]">
         Already have an account?{" "}
         <button
           type="button"
-          onClick={onSwitchToLogin}
-          className="font-semibold text-[#27332f] underline decoration-[#bbc5be] underline-offset-4 transition hover:decoration-[#27332f]"
+          onClick={onLogin}
+          className="font-medium text-[#52675b] underline decoration-[#bdc9bf] underline-offset-4 transition hover:text-[#293630]"
         >
-          Log in
+          Sign in
         </button>
-      </p>
-
-      <p className="text-center text-xs leading-5 text-[#9aa39e]">
-        By creating an account, you agree to
-        use Aurelia as a space for your own
-        focus and wellbeing.
       </p>
     </form>
   );

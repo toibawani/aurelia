@@ -1,47 +1,31 @@
 import { useState } from "react";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-} from "lucide-react";
-
-import { useAuth } from "../hooks/useAuth";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 interface LoginFormProps {
-  onSwitchToSignup: () => void;
-  onSuccess: () => void;
+  onLogin: () => void;
+  onSignup: () => void;
+  message?: string;
 }
 
 export default function LoginForm({
-  onSwitchToSignup,
-  onSuccess,
+  onLogin,
+  onSignup,
 }: LoginFormProps) {
-  const { signIn } = useAuth();
-
   const [email, setEmail] = useState("");
-  const [password, setPassword] =
-    useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-  ) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setError("");
-
     if (!email.trim()) {
-      setError("Please enter your email.");
+      setError("Please enter your email address.");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -50,154 +34,92 @@ export default function LoginForm({
       return;
     }
 
-    setLoading(true);
-
-    window.setTimeout(() => {
-      const user = signIn({
-        email,
-        password,
-      });
-
-      setLoading(false);
-
-      if (!user) {
-        setError(
-          "We couldn't find an account with those details.",
-        );
-        return;
-      }
-
-      onSuccess();
-    }, 500);
+    setError("");
+    onLogin();
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-5"
-    >
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
           htmlFor="login-email"
-          className="mb-2 block text-sm font-medium"
+          className="mb-2 block text-sm font-medium text-[#46534c]"
         >
           Email
         </label>
 
-        <div className="relative">
-          <Mail
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa49f]"
-          />
-
-          <input
-            id="login-email"
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
-            placeholder="you@example.com"
-            autoComplete="email"
-            className="h-13 w-full rounded-2xl border border-[#ddd7cc] bg-white/75 pl-11 pr-4 outline-none transition placeholder:text-[#b1b8b3] focus:border-[#8d9b93] focus:bg-white focus:ring-4 focus:ring-[#dce5dd]"
-          />
-        </div>
+        <input
+          id="login-email"
+          type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setError("");
+          }}
+          placeholder="you@example.com"
+          autoComplete="email"
+          className="h-12 w-full rounded-2xl border border-[#dedbd3] bg-white/70 px-4 text-sm text-[#29332e] outline-none transition placeholder:text-[#a3aaa5] focus:border-[#91a397] focus:bg-white focus:ring-4 focus:ring-[#dfe9dc]"
+        />
       </div>
 
       <div>
-        <div className="mb-2 flex items-center justify-between">
-          <label
-            htmlFor="login-password"
-            className="text-sm font-medium"
-          >
-            Password
-          </label>
-
-          <button
-            type="button"
-            className="text-xs font-medium text-[#7b8981] transition hover:text-[#27332f]"
-          >
-            Forgot password?
-          </button>
-        </div>
+        <label
+          htmlFor="login-password"
+          className="mb-2 block text-sm font-medium text-[#46534c]"
+        >
+          Password
+        </label>
 
         <div className="relative">
-          <Lock
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa49f]"
-          />
-
           <input
             id="login-password"
-            type={
-              showPassword
-                ? "text"
-                : "password"
-            }
+            type={showPassword ? "text" : "password"}
             value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setError("");
+            }}
             placeholder="Enter your password"
             autoComplete="current-password"
-            className="h-13 w-full rounded-2xl border border-[#ddd7cc] bg-white/75 pl-11 pr-12 outline-none transition placeholder:text-[#b1b8b3] focus:border-[#8d9b93] focus:bg-white focus:ring-4 focus:ring-[#dce5dd]"
+            className="h-12 w-full rounded-2xl border border-[#dedbd3] bg-white/70 px-4 pr-12 text-sm text-[#29332e] outline-none transition placeholder:text-[#a3aaa5] focus:border-[#91a397] focus:bg-white focus:ring-4 focus:ring-[#dfe9dc]"
           />
 
           <button
             type="button"
-            onClick={() =>
-              setShowPassword(
-                (current) => !current,
-              )
-            }
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-[#89958e] transition hover:bg-[#f0eee8] hover:text-[#27332f]"
-            aria-label={
-              showPassword
-                ? "Hide password"
-                : "Show password"
-            }
+            onClick={() => setShowPassword((current) => !current)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-[#8a958f] transition hover:bg-[#f1f3ef] hover:text-[#4d5b53]"
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            {showPassword ? (
-              <EyeOff size={17} />
-            ) : (
-              <Eye size={17} />
-            )}
+            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-[#ead4cc] bg-[#fbefeb] px-4 py-3 text-sm leading-5 text-[#9b5e50]">
+        <div className="rounded-2xl border border-[#ead6ce] bg-[#fbf0eb] px-4 py-3 text-sm text-[#8b6256]">
           {error}
         </div>
       )}
 
       <button
         type="submit"
-        disabled={loading}
-        className="group flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-[#27332f] px-5 font-medium text-white shadow-[0_12px_30px_rgba(39,51,47,0.18)] transition hover:-translate-y-0.5 hover:bg-[#34433d] disabled:cursor-not-allowed disabled:opacity-60"
+        className="group flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#293630] text-sm font-medium text-white shadow-[0_14px_30px_rgba(41,54,48,.16)] transition hover:-translate-y-0.5 hover:bg-[#34453d] active:translate-y-0"
       >
-        {loading ? (
-          "Opening your space..."
-        ) : (
-          <>
-            Continue to Aurelia
-            <ArrowRight
-              size={17}
-              className="transition-transform group-hover:translate-x-1"
-            />
-          </>
-        )}
+        Sign in
+        <ArrowRight
+          size={16}
+          className="transition-transform group-hover:translate-x-0.5"
+        />
       </button>
 
-      <p className="pt-3 text-center text-sm text-[#718078]">
-        New to Aurelia?{" "}
+      <p className="pt-2 text-center text-sm text-[#7d8882]">
+        Don't have an account?{" "}
         <button
           type="button"
-          onClick={onSwitchToSignup}
-          className="font-semibold text-[#27332f] underline decoration-[#bbc5be] underline-offset-4 transition hover:decoration-[#27332f]"
+          onClick={onSignup}
+          className="font-medium text-[#52675b] underline decoration-[#bdc9bf] underline-offset-4 transition hover:text-[#293630]"
         >
-          Create an account
+          Create one
         </button>
       </p>
     </form>
