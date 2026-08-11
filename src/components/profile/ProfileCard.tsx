@@ -1,27 +1,37 @@
 import {
+  ArrowRight,
   CheckCircle2,
   CloudSun,
   Flame,
+  Leaf,
+  Sparkles,
   Target,
-  TrendingUp,
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 import TaskList from "../components/dashboard/TaskList";
-import { useTasks } from "../hooks/useTasks";
+import { useTasks } from "../features/tasks/hooks/useTasks";
 import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
   const { user } = useAuth();
 
   const {
-    tasks = [],
+    tasks,
     addTask,
     toggleTask,
     deleteTask,
-    completedTasks = 0,
-    progress = 0,
+    progress,
   } = useTasks();
+
+  const firstName =
+    user?.name?.trim().split(" ")[0] || "there";
+
+  const completedTasks = tasks.filter(
+    (task) => task.completed,
+  ).length;
+
+  const totalTasks = tasks.length;
 
   function handleAddTask() {
     const title = window.prompt(
@@ -29,232 +39,268 @@ export default function Dashboard() {
     );
 
     if (title?.trim()) {
-      addTask(title);
+      addTask(title.trim());
     }
   }
 
-  const pendingTasks =
-    tasks.length - completedTasks;
+  const greetingHour = new Date().getHours();
 
-  const firstName =
-    user?.name?.trim().split(" ")[0] || "there";
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-
-    return "Good evening";
-  };
+  const greeting =
+    greetingHour < 12
+      ? "Good morning"
+      : greetingHour < 18
+        ? "Good afternoon"
+        : "Good evening";
 
   return (
     <DashboardLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-8">
+      <div className="min-h-full pb-12">
+        {/* HERO */}
 
-        {/* HEADER */}
+        <section className="relative overflow-hidden rounded-[32px] border border-[#e6e1d8] bg-[#f8f7f2] p-7 shadow-[0_18px_60px_rgba(55,63,57,0.06)] sm:p-9">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#dce8d9] blur-3xl" />
 
-        <section className="relative overflow-hidden rounded-[32px] border border-[#e8e4db] bg-[#faf9f5] p-7 shadow-sm sm:p-9">
+          <div className="pointer-events-none absolute -bottom-32 left-1/3 h-72 w-72 rounded-full bg-[#eadfd4] blur-3xl" />
 
-          <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#dfead9] blur-3xl" />
+          <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#dcd8cf] bg-white/70 px-3.5 py-2 text-xs font-medium text-[#718078] backdrop-blur">
+                <Leaf size={14} />
+                Your personal workspace
+              </div>
 
-          <div className="pointer-events-none absolute -bottom-28 left-1/3 h-56 w-56 rounded-full bg-[#eee1d7] blur-3xl" />
+              <p className="text-sm font-medium text-[#87928c]">
+                {greeting}, {firstName}.
+              </p>
 
-          <div className="relative">
+              <h1 className="mt-2 max-w-2xl text-4xl font-medium tracking-[-0.04em] text-[#27332f] sm:text-5xl">
+                Make today count,
+                <span className="text-[#78887f]">
+                  {" "}
+                  gently.
+                </span>
+              </h1>
 
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#ddd9d0] bg-white/70 px-3 py-1.5 text-xs text-[#78847e]">
-              <CloudSun size={14} />
-              Your personal workspace
+              <p className="mt-4 max-w-xl text-sm leading-7 text-[#78837e] sm:text-base">
+                You don't need to do everything today.
+                Focus on what matters most and let the
+                rest wait.
+              </p>
             </div>
 
-            <h1 className="text-3xl font-medium tracking-[-0.04em] text-stone-900 sm:text-4xl">
-              {getGreeting()}, {firstName}.
-            </h1>
+            <div className="shrink-0 rounded-[24px] border border-white/80 bg-white/70 p-5 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e4eee1] text-[#607266]">
+                  <Target size={20} />
+                </div>
 
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#78847e] sm:text-base">
-              Keep your attention on what matters today.
-              Progress does not have to be perfect to be meaningful.
-            </p>
+                <div>
+                  <p className="text-xs text-[#89938e]">
+                    Today's focus
+                  </p>
 
+                  <p className="mt-1 text-xl font-semibold text-[#27332f]">
+                    {progress}%
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* STATISTICS */}
+        {/* STATS */}
 
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-          <div className="rounded-3xl border border-[#e8e4db] bg-white p-6 shadow-sm">
+        <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-[26px] border border-[#e6e1d8] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(55,63,57,0.08)]">
             <div className="flex items-center justify-between">
+              <p className="text-sm text-[#7d8882]">
+                Focus score
+              </p>
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e6eee3] text-[#607566]">
-                <Target size={19} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e8f0e5] text-[#63756a]">
+                <Target size={17} />
               </div>
-
-              <span className="text-xs text-[#8d9791]">
-                TODAY
-              </span>
-
             </div>
 
-            <p className="mt-5 text-3xl font-medium text-stone-900">
+            <p className="mt-5 text-3xl font-medium tracking-tight text-[#27332f]">
               {progress}%
             </p>
 
-            <p className="mt-1 text-sm text-[#7f8983]">
-              Focus completed
-            </p>
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#ece9e2]">
+              <div
+                className="h-full rounded-full bg-[#73877b] transition-all duration-700"
+                style={{
+                  width: `${Math.min(
+                    Math.max(progress, 0),
+                    100,
+                  )}%`,
+                }}
+              />
+            </div>
           </div>
 
-          <div className="rounded-3xl border border-[#e8e4db] bg-white p-6 shadow-sm">
+          <div className="rounded-[26px] border border-[#e6e1d8] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(55,63,57,0.08)]">
             <div className="flex items-center justify-between">
+              <p className="text-sm text-[#7d8882]">
+                Completed
+              </p>
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#f0e7df] text-[#826f61]">
-                <CheckCircle2 size={19} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf1ec] text-[#68776e]">
+                <CheckCircle2 size={17} />
               </div>
-
-              <span className="text-xs text-[#8d9791]">
-                DONE
-              </span>
-
             </div>
 
-            <p className="mt-5 text-3xl font-medium text-stone-900">
+            <p className="mt-5 text-3xl font-medium tracking-tight text-[#27332f]">
               {completedTasks}
             </p>
 
-            <p className="mt-1 text-sm text-[#7f8983]">
-              Tasks completed
+            <p className="mt-2 text-xs text-[#929b96]">
+              {totalTasks === 0
+                ? "Nothing planned yet"
+                : `${totalTasks} task${
+                    totalTasks === 1 ? "" : "s"
+                  } planned`}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-[#e8e4db] bg-white p-6 shadow-sm">
+          <div className="rounded-[26px] border border-[#e6e1d8] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(55,63,57,0.08)]">
             <div className="flex items-center justify-between">
-
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e8eee9] text-[#64756a]">
-                <TrendingUp size={19} />
-              </div>
-
-              <span className="text-xs text-[#8d9791]">
-                NEXT
-              </span>
-
-            </div>
-
-            <p className="mt-5 text-3xl font-medium text-stone-900">
-              {pendingTasks}
-            </p>
-
-            <p className="mt-1 text-sm text-[#7f8983]">
-              Still on your list
-            </p>
-          </div>
-
-          <div className="rounded-3xl border border-[#e8e4db] bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eee5dc] text-[#806d5f]">
-                <Flame size={19} />
-              </div>
-
-              <span className="text-xs text-[#8d9791]">
-                STREAK
-              </span>
-
-            </div>
-
-            <p className="mt-5 text-3xl font-medium text-stone-900">
-              7
-            </p>
-
-            <p className="mt-1 text-sm text-[#7f8983]">
-              Days showing up
-            </p>
-          </div>
-
-        </section>
-
-        {/* PROGRESS */}
-
-        <section className="rounded-[30px] border border-[#e8e4db] bg-white p-6 shadow-sm sm:p-7">
-
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#929b96]">
-                Today's rhythm
+              <p className="text-sm text-[#7d8882]">
+                Life weather
               </p>
 
-              <h2 className="mt-2 text-2xl font-medium tracking-tight text-stone-900">
-                {progress === 100
-                  ? "You made it through everything."
-                  : progress >= 50
-                    ? "You're making good progress."
-                    : tasks.length === 0
-                      ? "A quiet start is still a start."
-                      : "One step at a time."}
-              </h2>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f2e9df] text-[#84786e]">
+                <CloudSun size={17} />
+              </div>
             </div>
 
-            <div className="text-sm text-[#7d8882]">
-              {completedTasks} of {tasks.length} tasks complete
-            </div>
+            <p className="mt-5 text-3xl font-medium tracking-tight text-[#27332f]">
+              Clear
+            </p>
 
+            <p className="mt-2 text-xs text-[#929b96]">
+              A calm space to make progress.
+            </p>
           </div>
 
-          <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#eeeae3]">
+          <div className="rounded-[26px] border border-[#e6e1d8] bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(55,63,57,0.08)]">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-[#7d8882]">
+                Daily rhythm
+              </p>
 
-            <div
-              className="h-full rounded-full bg-[#65776c] transition-all duration-700"
-              style={{
-                width: `${progress}%`,
-              }}
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f0e9df] text-[#84766b]">
+                <Flame size={17} />
+              </div>
+            </div>
+
+            <p className="mt-5 text-3xl font-medium tracking-tight text-[#27332f]">
+              Steady
+            </p>
+
+            <p className="mt-2 text-xs text-[#929b96]">
+              Keep showing up for yourself.
+            </p>
+          </div>
+        </section>
+
+        {/* MAIN CONTENT */}
+
+        <section className="mt-6 grid gap-6 xl:grid-cols-[1fr_330px]">
+          <div className="rounded-[30px] border border-[#e6e1d8] bg-white p-6 sm:p-7">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#98a19c]">
+                  Today
+                </p>
+
+                <h2 className="mt-1 text-2xl font-medium tracking-tight text-[#27332f]">
+                  Your tasks
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddTask}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#27332f] px-5 py-2.5 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[#35443e]"
+              >
+                Add task
+                <ArrowRight size={16} />
+              </button>
+            </div>
+
+            <TaskList
+              tasks={tasks}
+              onAdd={handleAddTask}
+              onToggle={toggleTask}
+              onDelete={deleteTask}
             />
-
           </div>
 
-          <div className="mt-3 flex justify-between text-xs text-[#929b96]">
-            <span>Start</span>
-            <span>{progress}%</span>
-            <span>Complete</span>
-          </div>
+          {/* SIDE PANEL */}
 
-        </section>
+          <aside className="space-y-6">
+            <div className="rounded-[30px] border border-[#e6e1d8] bg-[#f3eee7] p-6">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-[#69776f]">
+                <Sparkles size={19} />
+              </div>
 
-        {/* TASK AREA */}
+              <h3 className="mt-5 text-xl font-medium tracking-tight text-[#27332f]">
+                A small reminder
+              </h3>
 
-        <section className="rounded-[30px] border border-[#e8e4db] bg-[#faf9f5] p-5 shadow-sm sm:p-7">
-
-          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#929b96]">
-                Your focus
+              <p className="mt-3 text-sm leading-6 text-[#7c827e]">
+                Productivity isn't about filling every
+                minute. It's about giving your attention
+                to the things that deserve it.
               </p>
 
-              <h2 className="mt-1 text-2xl font-medium tracking-tight text-stone-900">
-                Today's tasks
-              </h2>
+              <div className="mt-6 rounded-2xl bg-white/65 p-4">
+                <p className="text-sm font-medium text-[#4d5b54]">
+                  Progress still counts when it's quiet.
+                </p>
+              </div>
+            </div>
 
-              <p className="mt-1 text-sm text-[#7d8882]">
-                Do what matters. Leave room to breathe.
+            <div className="rounded-[30px] border border-[#e6e1d8] bg-[#eaf0e6] p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-[#64756a]">
+                  <Leaf size={18} />
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-[#526259]">
+                    Your pace
+                  </p>
+
+                  <p className="text-xs text-[#849088]">
+                    No pressure required.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/70">
+                <div
+                  className="h-full rounded-full bg-[#78907f] transition-all duration-700"
+                  style={{
+                    width: `${Math.min(
+                      Math.max(progress, 0),
+                      100,
+                    )}%`,
+                  }}
+                />
+              </div>
+
+              <p className="mt-3 text-xs text-[#7c8981]">
+                {progress >= 100
+                  ? "Everything is complete. Beautiful."
+                  : progress > 0
+                    ? "You're making progress."
+                    : "Start with one small thing."}
               </p>
             </div>
-
-            <div className="text-sm text-[#7d8882]">
-              {pendingTasks} remaining
-            </div>
-
-          </div>
-
-          <TaskList
-            tasks={tasks}
-            onAdd={handleAddTask}
-            onToggle={toggleTask}
-            onDelete={deleteTask}
-          />
-
+          </aside>
         </section>
-
       </div>
     </DashboardLayout>
   );
