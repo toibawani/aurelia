@@ -1,354 +1,826 @@
-```tsx
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
+  Leaf,
+  Lock,
+  Mail,
+  User,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
-export default function Landing() {
+export default function Signup() {
   const navigate = useNavigate();
+  const { signup } = useAuth();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
+
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const passwordLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  const passwordsMatch =
+    password.length > 0 &&
+    password === confirmPassword;
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setError("");
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName) {
+      setError("Please enter your name.");
+      return;
+    }
+
+    if (!cleanEmail) {
+      setError("Please enter your email address.");
+      return;
+    }
+
+    if (!password) {
+      setError("Please create a password.");
+      return;
+    }
+
+    if (!passwordLength) {
+      setError(
+        "Your password must contain at least 8 characters.",
+      );
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setError("Your passwords do not match.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      await signup(
+        cleanName,
+        cleanEmail,
+        password,
+      );
+
+      navigate("/dashboard", {
+        replace: true,
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
-    <div
+    <main
       style={{
         minHeight: "100vh",
-        backgroundColor: "#f7f6f1",
+        background:
+          "linear-gradient(135deg, #faf7f2 0%, #f4efe7 55%, #edf2eb 100%)",
         color: "#27332f",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "32px 20px",
       }}
     >
-      <header
+      <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
+          width: "100%",
+          maxWidth: "1080px",
+          display: "grid",
+          gridTemplateColumns:
+            "minmax(0, 0.9fr) minmax(360px, 0.8fr)",
+          gap: "50px",
           alignItems: "center",
-          padding: "24px 40px",
         }}
       >
-        <div>
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: 600,
-            }}
-          >
-            Aurelia
-          </div>
+        {/* LEFT SIDE */}
 
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#87938c",
-              marginTop: "4px",
-            }}
-          >
-            Your gentle workspace
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate("/login")}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "999px",
-            border: "1px solid #d7d1c6",
-            backgroundColor: "#ffffff",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          Log in
-        </button>
-      </header>
-
-      <main
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "60px 40px",
-          display: "flex",
-          alignItems: "center",
-          gap: "60px",
-          flexWrap: "wrap",
-        }}
-      >
         <section
           style={{
-            flex: "1 1 500px",
+            padding: "20px",
           }}
         >
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              border: "none",
+              background: "transparent",
+              color: "#718078",
+              cursor: "pointer",
+              fontSize: "14px",
+              padding: 0,
+              marginBottom: "55px",
+            }}
+          >
+            <ArrowLeft size={16} />
+            Back to Aurelia
+          </button>
+
           <div
             style={{
-              display: "inline-block",
-              padding: "8px 14px",
-              borderRadius: "999px",
-              border: "1px solid #d8d3c9",
-              backgroundColor: "#ffffff",
-              color: "#718078",
-              fontSize: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
               marginBottom: "24px",
             }}
           >
-            Productivity without the pressure
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "14px",
+                background: "#e3ede0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Leaf size={21} />
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 600,
+                }}
+              >
+                Aurelia
+              </div>
+
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#87938c",
+                  marginTop: "3px",
+                }}
+              >
+                Your gentle workspace
+              </div>
+            </div>
           </div>
 
           <h1
             style={{
-              fontSize: "72px",
-              lineHeight: "0.98",
+              fontSize: "clamp(42px, 5vw, 70px)",
+              lineHeight: 1,
+              letterSpacing: "-0.055em",
               fontWeight: 500,
-              margin: "0 0 28px",
+              margin: "0 0 24px",
+              maxWidth: "580px",
             }}
           >
-            Get things done.
+            Create a space
             <br />
             <span style={{ color: "#75847c" }}>
-              Stay human.
+              that feels like yours.
             </span>
           </h1>
 
           <p
             style={{
-              maxWidth: "560px",
-              fontSize: "18px",
-              lineHeight: 1.7,
+              maxWidth: "520px",
+              fontSize: "17px",
+              lineHeight: 1.8,
               color: "#718078",
+              margin: 0,
             }}
           >
-            Aurelia brings your tasks, energy, focus
-            and moments of calm into one beautifully
-            simple workspace.
+            Start with a simple workspace designed
+            around your priorities, your pace, and the
+            things that matter to you.
           </p>
 
           <div
             style={{
+              marginTop: "34px",
               display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
-              marginTop: "32px",
+              flexDirection: "column",
+              gap: "13px",
             }}
           >
-            <button
-              type="button"
-              onClick={() => navigate("/signup")}
-              style={{
-                padding: "14px 24px",
-                borderRadius: "999px",
-                border: "none",
-                backgroundColor: "#27332f",
-                color: "#ffffff",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              Create your space →
-            </button>
+            {[
+              "Organize your day without the pressure",
+              "Keep your notes and thoughts in one place",
+              "See your progress without obsessing over it",
+            ].map((item) => (
+              <div
+                key={item}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "11px",
+                  color: "#69776f",
+                  fontSize: "14px",
+                }}
+              >
+                <span
+                  style={{
+                    width: "23px",
+                    height: "23px",
+                    borderRadius: "50%",
+                    background: "#e4eee1",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Check size={13} />
+                </span>
 
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              style={{
-                padding: "14px 24px",
-                borderRadius: "999px",
-                border: "1px solid #d3cec4",
-                backgroundColor: "#ffffff",
-                color: "#27332f",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              I already have an account
-            </button>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexWrap: "wrap",
-              marginTop: "32px",
-              color: "#7b8781",
-              fontSize: "13px",
-            }}
-          >
-            <span>✓ Simple by design</span>
-            <span>✓ Your data stays yours</span>
-            <span>✓ Built for real days</span>
+                {item}
+              </div>
+            ))}
           </div>
         </section>
 
+        {/* SIGNUP CARD */}
+
         <section
           style={{
-            flex: "1 1 350px",
-            maxWidth: "440px",
+            width: "100%",
+            maxWidth: "470px",
+            margin: "0 auto",
           }}
         >
           <div
             style={{
+              background:
+                "rgba(255,255,255,0.82)",
+              border: "1px solid rgba(255,255,255,0.9)",
               borderRadius: "32px",
-              backgroundColor: "#faf9f5",
-              padding: "28px",
+              padding: "38px",
               boxShadow:
-                "0 30px 70px rgba(61,66,58,0.14)",
+                "0 30px 80px rgba(61,66,58,0.14)",
+              backdropFilter: "blur(20px)",
             }}
           >
             <div
               style={{
-                fontSize: "12px",
-                color: "#8a958f",
+                marginBottom: "28px",
               }}
             >
-              TODAY
-            </div>
-
-            <h2
-              style={{
-                margin: "6px 0 0",
-                fontSize: "28px",
-                fontWeight: 500,
-              }}
-            >
-              Your pace
-            </h2>
-
-            <div
-              style={{
-                marginTop: "24px",
-                padding: "22px",
-                borderRadius: "24px",
-                backgroundColor: "#e9f0e5",
-              }}
-            >
-              <div
+              <p
                 style={{
-                  fontSize: "14px",
-                  color: "#66766b",
-                }}
-              >
-                Life weather
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                  marginTop: "8px",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "36px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Clear
-                  </div>
-
-                  <div
-                    style={{
-                      marginTop: "4px",
-                      fontSize: "13px",
-                      color: "#718078",
-                    }}
-                  >
-                    Good energy today
-                  </div>
-                </div>
-
-                <div style={{ fontSize: "42px" }}>
-                  ☀️
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                marginTop: "18px",
-                padding: "20px",
-                borderRadius: "24px",
-                border: "1px solid #e4dfd5",
-                backgroundColor: "#ffffff",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "16px",
-                }}
-              >
-                Today's focus
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "12px",
-                    borderRadius: "14px",
-                    backgroundColor: "#f4f2ed",
-                    textDecoration: "line-through",
-                    color: "#9aa39e",
-                  }}
-                >
-                  ✓ Finish project proposal
-                </div>
-
-                <div
-                  style={{
-                    padding: "12px",
-                    borderRadius: "14px",
-                    backgroundColor: "#f4f2ed",
-                  }}
-                >
-                  ○ Read for 20 minutes
-                </div>
-
-                <div
-                  style={{
-                    padding: "12px",
-                    borderRadius: "14px",
-                    backgroundColor: "#f4f2ed",
-                  }}
-                >
-                  ○ Take an evening walk
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                marginTop: "18px",
-                padding: "16px",
-                borderRadius: "22px",
-                backgroundColor: "#f1e8df",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                }}
-              >
-                🌿 Don't rush this one.
-              </div>
-
-              <div
-                style={{
-                  marginTop: "5px",
+                  margin: "0 0 8px",
                   fontSize: "12px",
-                  color: "#827d77",
+                  letterSpacing: "0.08em",
+                  color: "#8a958f",
+                  textTransform: "uppercase",
                 }}
               >
-                Progress still counts when it's quiet.
+                Begin your journey
+              </p>
+
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "32px",
+                  letterSpacing: "-0.04em",
+                  fontWeight: 550,
+                }}
+              >
+                Create your account
+              </h2>
+
+              <p
+                style={{
+                  margin:
+                    "9px 0 0",
+                  color: "#7b8781",
+                  fontSize: "14px",
+                  lineHeight: 1.6,
+                }}
+              >
+                A few details and your Aurelia
+                workspace is ready.
+              </p>
+            </div>
+
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+            >
+              {/* NAME */}
+
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "18px",
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    marginBottom: "8px",
+                  }}
+                >
+                  Your name
+                </span>
+
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <User
+                    size={17}
+                    style={{
+                      position: "absolute",
+                      left: "15px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      color: "#9aa39e",
+                    }}
+                  />
+
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(event) =>
+                      setName(event.target.value)
+                    }
+                    placeholder="What should we call you?"
+                    autoComplete="name"
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding:
+                        "13px 15px 13px 44px",
+                      borderRadius: "15px",
+                      border:
+                        "1px solid #dedbd3",
+                      background: "#fbfaf7",
+                      outline: "none",
+                      color: "#27332f",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+              </label>
+
+              {/* EMAIL */}
+
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "18px",
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    marginBottom: "8px",
+                  }}
+                >
+                  Email address
+                </span>
+
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <Mail
+                    size={17}
+                    style={{
+                      position: "absolute",
+                      left: "15px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      color: "#9aa39e",
+                    }}
+                  />
+
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) =>
+                      setEmail(event.target.value)
+                    }
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding:
+                        "13px 15px 13px 44px",
+                      borderRadius: "15px",
+                      border:
+                        "1px solid #dedbd3",
+                      background: "#fbfaf7",
+                      outline: "none",
+                      color: "#27332f",
+                      fontSize: "14px",
+                    }}
+                  />
+                </div>
+              </label>
+
+              {/* PASSWORD */}
+
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "12px",
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    marginBottom: "8px",
+                  }}
+                >
+                  Password
+                </span>
+
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <Lock
+                    size={17}
+                    style={{
+                      position: "absolute",
+                      left: "15px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      color: "#9aa39e",
+                    }}
+                  />
+
+                  <input
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={password}
+                    onChange={(event) =>
+                      setPassword(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Create a password"
+                    autoComplete="new-password"
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding:
+                        "13px 46px 13px 44px",
+                      borderRadius: "15px",
+                      border:
+                        "1px solid #dedbd3",
+                      background: "#fbfaf7",
+                      outline: "none",
+                      color: "#27332f",
+                      fontSize: "14px",
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword(
+                        (current) => !current,
+                      )
+                    }
+                    aria-label={
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    style={{
+                      position: "absolute",
+                      right: "13px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      border: "none",
+                      background:
+                        "transparent",
+                      color: "#8a958f",
+                      cursor: "pointer",
+                      padding: "5px",
+                    }}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={17} />
+                    ) : (
+                      <Eye size={17} />
+                    )}
+                  </button>
+                </div>
+              </label>
+
+              {/* PASSWORD REQUIREMENTS */}
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "7px 10px",
+                  marginBottom: "18px",
+                  fontSize: "11px",
+                  color: "#87938c",
+                }}
+              >
+                <span
+                  style={{
+                    color: passwordLength
+                      ? "#5e7566"
+                      : "#9aa39e",
+                  }}
+                >
+                  {passwordLength
+                    ? "✓"
+                    : "○"}{" "}
+                  8+ characters
+                </span>
+
+                <span
+                  style={{
+                    color: hasUppercase
+                      ? "#5e7566"
+                      : "#9aa39e",
+                  }}
+                >
+                  {hasUppercase
+                    ? "✓"
+                    : "○"}{" "}
+                  Uppercase letter
+                </span>
+
+                <span
+                  style={{
+                    color: hasNumber
+                      ? "#5e7566"
+                      : "#9aa39e",
+                  }}
+                >
+                  {hasNumber ? "✓" : "○"}{" "}
+                  Number
+                </span>
+
+                <span
+                  style={{
+                    color: passwordsMatch
+                      ? "#5e7566"
+                      : "#9aa39e",
+                  }}
+                >
+                  {passwordsMatch
+                    ? "✓"
+                    : "○"}{" "}
+                  Passwords match
+                </span>
               </div>
+
+              {/* CONFIRM PASSWORD */}
+
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "20px",
+                }}
+              >
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    marginBottom: "8px",
+                  }}
+                >
+                  Confirm password
+                </span>
+
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <Lock
+                    size={17}
+                    style={{
+                      position: "absolute",
+                      left: "15px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      color: "#9aa39e",
+                    }}
+                  />
+
+                  <input
+                    type={
+                      showConfirmPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={confirmPassword}
+                    onChange={(event) =>
+                      setConfirmPassword(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Enter your password again"
+                    autoComplete="new-password"
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding:
+                        "13px 46px 13px 44px",
+                      borderRadius: "15px",
+                      border:
+                        "1px solid #dedbd3",
+                      background: "#fbfaf7",
+                      outline: "none",
+                      color: "#27332f",
+                      fontSize: "14px",
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword(
+                        (current) => !current,
+                      )
+                    }
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    style={{
+                      position: "absolute",
+                      right: "13px",
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)",
+                      border: "none",
+                      background:
+                        "transparent",
+                      color: "#8a958f",
+                      cursor: "pointer",
+                      padding: "5px",
+                    }}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={17} />
+                    ) : (
+                      <Eye size={17} />
+                    )}
+                  </button>
+                </div>
+              </label>
+
+              {/* ERROR */}
+
+              {error && (
+                <div
+                  role="alert"
+                  style={{
+                    marginBottom: "16px",
+                    padding: "12px 14px",
+                    borderRadius: "13px",
+                    background: "#f7e9e5",
+                    color: "#9a5d52",
+                    fontSize: "13px",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+
+              {/* SUBMIT */}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "9px",
+                  padding: "14px 20px",
+                  border: "none",
+                  borderRadius: "16px",
+                  background:
+                    isSubmitting
+                      ? "#66736d"
+                      : "#27332f",
+                  color: "#ffffff",
+                  cursor: isSubmitting
+                    ? "wait"
+                    : "pointer",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  boxShadow:
+                    "0 12px 25px rgba(39,51,47,.15)",
+                }}
+              >
+                {isSubmitting
+                  ? "Creating your space..."
+                  : "Create my Aurelia space"}
+
+                {!isSubmitting && (
+                  <ArrowRight size={16} />
+                )}
+              </button>
+            </form>
+
+            {/* LOGIN */}
+
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "22px",
+                paddingTop: "20px",
+                borderTop:
+                  "1px solid #ece9e2",
+                fontSize: "13px",
+                color: "#7b8781",
+              }}
+            >
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                style={{
+                  color: "#4f6659",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                Log in
+              </Link>
             </div>
           </div>
+
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: "16px",
+              color: "#9aa39e",
+              fontSize: "11px",
+              lineHeight: 1.5,
+            }}
+          >
+            Your account is stored locally in this
+            prototype.
+          </p>
         </section>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
-```
