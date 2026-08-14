@@ -1,3 +1,4 @@
+cat > src/pages/Dashboard.tsx <<'EOF'
 import {
   CloudSun,
   Flame,
@@ -5,10 +6,10 @@ import {
 } from "lucide-react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
-import WelcomeCard from "../components/dashboard/WelcomeCard";
 import StatCard from "../components/dashboard/StatCard";
 import TaskList from "../components/dashboard/TaskList";
 import { useTasks } from "../features/tasks/hooks/useTasks";
+import type { TaskPriority } from "../features/tasks/types/task";
 
 export default function Dashboard() {
   const {
@@ -19,26 +20,27 @@ export default function Dashboard() {
     progress,
   } = useTasks();
 
-  function handleAddTask() {
-    const title = window.prompt("What needs to be done?");
-
-    if (title) {
-      addTask(title);
-    }
+  function handleAddTask(
+    title: string,
+    priority: TaskPriority,
+  ) {
+    addTask(title, priority);
   }
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <WelcomeCard />
-
+      <div className="space-y-7">
         <section>
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-stone-900">
-              Your day at a glance
-            </h2>
+          <div className="mb-5">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-stone-400">
+              Your workspace
+            </p>
 
-            <p className="mt-1 text-sm text-stone-500">
+            <h1 className="mt-1 text-3xl font-medium tracking-[-0.03em] text-stone-900">
+              Your day at a glance
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-stone-500">
               A simple view of what matters today.
             </p>
           </div>
@@ -77,3 +79,4 @@ export default function Dashboard() {
     </DashboardLayout>
   );
 }
+EOF
