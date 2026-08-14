@@ -12,10 +12,13 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import NotesPage from "./features/notes/components/NotesPage";
+import ProtectedRoute from "./features/auth/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
+      {/* Public routes */}
+
       <Route
         path="/"
         element={<Landing />}
@@ -31,55 +34,61 @@ export default function App() {
         element={<Signup />}
       />
 
-      <Route
-        path="/dashboard"
-        element={<Dashboard />}
-      />
+      {/* Protected application routes */}
 
-      <Route
-        path="/dashboard/notes"
-        element={<NotesPage />}
-      />
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
-      <Route
-        path="/profile"
-        element={<Profile />}
-      />
+        <Route
+          path="/dashboard/notes"
+          element={<NotesPage />}
+        />
 
-      <Route
-        path="/settings"
-        element={<Settings />}
-      />
+        <Route
+          path="/profile"
+          element={<Profile />}
+        />
 
-      <Route
-        path="/dashboard/tasks"
-        element={
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        }
-      />
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
 
-      <Route
-        path="/dashboard/garden"
-        element={
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        }
-      />
+        <Route
+          path="/dashboard/tasks"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
 
-      <Route
-        path="/dashboard/insights"
-        element={
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        }
-      />
+        <Route
+          path="/dashboard/garden"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
+
+        <Route
+          path="/dashboard/insights"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
+      </Route>
+
+      {/* Fallback */}
 
       <Route
         path="*"
