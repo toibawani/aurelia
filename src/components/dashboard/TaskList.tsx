@@ -1,4 +1,3 @@
-cat > src/components/dashboard/TaskList.tsx <<'EOF'
 import { useState } from "react";
 import { CheckCircle2, Plus } from "lucide-react";
 
@@ -110,4 +109,3 @@ export default function TaskList({
     </>
   );
 }
-EOF

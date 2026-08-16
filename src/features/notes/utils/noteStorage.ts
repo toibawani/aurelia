@@ -4,28 +4,25 @@ const NOTES_KEY = "aurelia-notes";
 
 export function getNotes(): Note[] {
   try {
-    const stored = localStorage.getItem(
-      NOTES_KEY,
-    );
+    const stored = localStorage.getItem(NOTES_KEY);
 
     if (!stored) {
       return [];
     }
 
-    const parsed: unknown =
-      JSON.parse(stored);
+    const parsed: unknown = JSON.parse(stored);
 
-    return Array.isArray(parsed)
-      ? (parsed as Note[])
-      : [];
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed as Note[];
   } catch {
     return [];
   }
 }
 
-export function saveNotes(
-  notes: Note[],
-): void {
+export function saveNotes(notes: Note[]): void {
   try {
     localStorage.setItem(
       NOTES_KEY,

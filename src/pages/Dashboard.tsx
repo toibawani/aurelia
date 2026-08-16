@@ -1,4 +1,3 @@
-cat > src/pages/Dashboard.tsx <<'EOF'
 import {
   CloudSun,
   Flame,
@@ -79,4 +78,3 @@ export default function Dashboard() {
     </DashboardLayout>
   );
 }
-EOF
