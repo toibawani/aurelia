@@ -8,10 +8,10 @@ import {
   Target,
 } from "lucide-react";
 
-import DashboardLayout from "../layouts/DashboardLayout";
-import TaskList from "../components/dashboard/TaskList";
-import { useTasks } from "../features/tasks/hooks/useTasks";
-import { useAuth } from "../context/AuthContext";
+import DashboardLayout from "../../layouts/DashboardLayout";
+import TaskList from "../dashboard/TaskList";
+import { useTasks } from "../../features/tasks/hooks/useTasks";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Dashboard() {
   const { user } = useAuth();

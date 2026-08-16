@@ -1,48 +1,41 @@
 import { useState } from "react";
 
-import AuthShell from "../features/auth/components/AuthShell";
+import AuthLayout from "../components/auth/AuthLayout";
 import LoginForm from "../features/auth/components/LoginForm";
 import SignupForm from "../features/auth/components/SignupForm";
 
 type AuthMode = "login" | "signup";
 
 export default function Auth() {
-  const [mode, setMode] =
-    useState<AuthMode>("signup");
+  const [mode, setMode] = useState<AuthMode>("login");
 
-  function enterDashboard() {
-    window.location.href = "/dashboard";
-  }
-
-  if (mode === "login") {
-    return (
-      <AuthShell
-        eyebrow="Welcome back"
-        title="Good to see you."
-        description="Your space is waiting. Pick up where you left off."
-      >
-        <LoginForm
-          onSwitchToSignup={() =>
-            setMode("signup")
-          }
-          onSuccess={enterDashboard}
-        />
-      </AuthShell>
-    );
-  }
+  const isLogin = mode === "login";
 
   return (
-    <AuthShell
-      eyebrow="Start gently"
-      title="Create your space."
-      description="Aurelia is a quieter place to organize your days, focus your attention and make progress."
+    <AuthLayout
+      title={isLogin ? "Welcome back." : "Create your space."}
+      subtitle={
+        isLogin
+          ? "Sign in and continue where you left off."
+          : "A small space for the things that matter to you."
+      }
+      onBack={() => window.history.back()}
     >
-      <SignupForm
-        onSwitchToLogin={() =>
-          setMode("login")
-        }
-        onSuccess={enterDashboard}
-      />
-    </AuthShell>
+      {isLogin ? (
+        <LoginForm
+          onLogin={() => {
+            // Login handling is owned by the auth flow.
+          }}
+          onSignup={() => setMode("signup")}
+        />
+      ) : (
+        <SignupForm
+          onSignup={() => {
+            // Signup handling is owned by the auth flow.
+          }}
+          onLogin={() => setMode("login")}
+        />
+      )}
+    </AuthLayout>
   );
 }
