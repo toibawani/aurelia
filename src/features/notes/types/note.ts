@@ -1,6 +1,3 @@
-cd ~/Documents/aurelia
-
-cat > src/features/notes/types/note.ts <<'EOF'
 export type NoteColor =
   | "cream"
   | "sage"
